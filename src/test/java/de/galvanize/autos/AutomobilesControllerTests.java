@@ -179,11 +179,11 @@ public class AutomobilesControllerTests {
                 .andExpect(jsonPath("owner").value("Bob"));
     }
 
-// PATCH: /api/autos/{vin} returns no content auto not found
-// PATCH: /api/autos/{vin} returns 400 bad request (no payload, no changes, or already done)
+    // PATCH: /api/autos/{vin} returns no content auto not found
+    // PATCH: /api/autos/{vin} returns 400 bad request (no payload, no changes, or already done)
 
     // DELETE: /api/autos/{vin}
-// DELETE: /api/autos/{vin} returns 202, delete request accepted
+    // DELETE: /api/autos/{vin} returns 202, delete request accepted
     @Test
     void deleteAuto_withVin_exists_return202() throws Exception {
         // GIVEN | ARRANGE
