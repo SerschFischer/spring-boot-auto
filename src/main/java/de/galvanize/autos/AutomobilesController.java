@@ -36,9 +36,24 @@ public class AutomobilesController {
         return automobilesService.getAuto(vin);
     }
 
+    @PatchMapping("/api/autos/{vin}")
+    public Automobile updateAuto(@PathVariable String vin,
+                                 @RequestBody UpdateOwnerRequest update){
+        Automobile automobile = automobilesService.updateAutomobile(vin, update.getColor(), update.getOwner());
+        automobile.setColor(update.getColor());
+        automobile.setOwner(update.getOwner());
+        return automobile;
+    }
+
     @PostMapping("/api/autos")
     public Automobile addAuto(@RequestBody Automobile automobile){
         return automobilesService.addAuto(automobile);
+    }
+
+    @DeleteMapping("/api/autos/{vin}")
+    public ResponseEntity deleteAuto(@PathVariable String vin){
+        automobilesService.deleteAuto(vin);
+        return ResponseEntity.accepted().build();
     }
 
     @ExceptionHandler
