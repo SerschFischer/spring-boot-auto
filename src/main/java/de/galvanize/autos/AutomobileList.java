@@ -1,10 +1,15 @@
 package de.galvanize.autos;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class AutomobileList {
     private List<Automobile> automobiles;
+
+    public AutomobileList() {
+        this.automobiles = new ArrayList<>();
+    }
 
     public AutomobileList(List<Automobile> automobiles) {
         this.automobiles = automobiles;

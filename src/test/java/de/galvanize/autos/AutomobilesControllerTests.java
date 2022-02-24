@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +23,7 @@ public class AutomobilesControllerTests {
     MockMvc mockMvc;
 
     @MockBean
-    AutomobilesService autosService;
+    AutomobilesService automobilesService;
 
     // GET: /api/autos
     // GET: /api/autos returns list of all autos in db
@@ -34,9 +34,9 @@ public class AutomobilesControllerTests {
         for (int i = 0; i < 5; i++) {
             automobiles.add(new Automobile(1999, "Ford", "Mustang", "Red", "Nobody", "123123"));
         }
-        when(autosService.getAutos()).thenReturn(new AutomobileList(automobiles));
+        when(automobilesService.getAutos()).thenReturn(new AutomobileList(automobiles));
         // WHEN | ACT
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/autos"))
+        mockMvc.perform(get("/api/autos"))
                 .andDo(print())
         // THEN | ASSERT
                 .andExpect(status().isOk())
@@ -44,6 +44,17 @@ public class AutomobilesControllerTests {
     }
 
     // GET: /api/autos returns 204 no autos found
+    @Test
+    void getAutos_noParams_none_returnsNoContent() throws Exception {
+        // GIVEN | ARRANGE
+        when(automobilesService.getAutos()).thenReturn(new AutomobileList());
+        // WHEN | ACT
+        mockMvc.perform(get("/api/autos"))
+                .andDo(print())
+        // THEN | ASSERT
+                .andExpect(status().isNoContent());
+    }
+
 // GET: /api/autos?color=RED returns red cars
 // GET: /api/autos?make=Ford returns fords
 // GET: /api/autos?make=Ford&color=GREEN
