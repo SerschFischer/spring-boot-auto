@@ -7,4 +7,8 @@ public class AutomobilesService {
     public AutomobileList getAutos() {
         return null;
     }
+
+    public AutomobileList getAutos(String color, String make) {
+        return null;
+    }
 }
