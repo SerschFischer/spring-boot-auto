@@ -52,7 +52,12 @@ public class AutomobilesController {
 
     @DeleteMapping("/api/autos/{vin}")
     public ResponseEntity deleteAuto(@PathVariable String vin){
+        try{
+
         automobilesService.deleteAuto(vin);
+        } catch (AutoNotFountException autoNotFountException){
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.accepted().build();
     }
 
@@ -60,4 +65,6 @@ public class AutomobilesController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void invalidAutomobileHandler(InvalidAutomobileException invalidAutomobileException){
     }
+
+
 }

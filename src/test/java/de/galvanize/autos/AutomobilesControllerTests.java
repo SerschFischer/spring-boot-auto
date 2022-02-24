@@ -14,8 +14,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -77,6 +76,7 @@ public class AutomobilesControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.automobiles", hasSize(2)));
     }
+
     // GET: /api/autos?make=Ford returns fords
     @Test
     void getAutos_searchMakeParam_returnsAutomobileList() throws Exception {
@@ -92,6 +92,7 @@ public class AutomobilesControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.automobiles", hasSize(3)));
     }
+
     // GET: /api/autos?make=Ford&color=GREEN
     @Test
     void getAutos_searchParams_returnsAutomobileList() throws Exception {
@@ -145,7 +146,7 @@ public class AutomobilesControllerTests {
                 .andExpect(status().isBadRequest());
     }
 
-// GET: /api/autos/{vin}
+    // GET: /api/autos/{vin}
 // GET: /api/autos/{vin} returns the requested automobile
     @Test
     void getAuto_withVin_returnAuto() throws Exception {
@@ -153,14 +154,14 @@ public class AutomobilesControllerTests {
         Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ACC");
         when(automobilesService.getAuto(anyString())).thenReturn(automobile);
         // WHEN | ACT
-        mockMvc.perform(get("/api/autos/"+automobile.getVin()))
-        // THEN | ASSERT
+        mockMvc.perform(get("/api/autos/" + automobile.getVin()))
+                // THEN | ASSERT
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("vin").value(automobile.getVin()));
     }
 // GET: /api/autos/{vin} returns not content auto not found
 
-// PATCH: /api/autos{vin}
+    // PATCH: /api/autos{vin}
 // PATCH: /api/autos/{vin} returns patched automobile
     @Test
     void updateAuto_withObject_returnAuto() throws Exception {
@@ -168,11 +169,11 @@ public class AutomobilesControllerTests {
         Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Bob", "ACC");
         when(automobilesService.updateAutomobile(anyString(), anyString(), anyString())).thenReturn(automobile);
         // WHEN | ACT
-        mockMvc.perform(patch("/api/autos/"+automobile.getVin())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"color\":\"RED\",\"owner\":\"Bob\"}")
-        )
-        // THEN | ASSERT
+        mockMvc.perform(patch("/api/autos/" + automobile.getVin())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"color\":\"RED\",\"owner\":\"Bob\"}")
+                )
+                // THEN | ASSERT
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("color").value("RED"))
                 .andExpect(jsonPath("owner").value("Bob"));
@@ -181,19 +182,27 @@ public class AutomobilesControllerTests {
 // PATCH: /api/autos/{vin} returns no content auto not found
 // PATCH: /api/autos/{vin} returns 400 bad request (no payload, no changes, or already done)
 
-// DELETE: /api/autos/{vin}
+    // DELETE: /api/autos/{vin}
 // DELETE: /api/autos/{vin} returns 202, delete request accepted
-
     @Test
     void deleteAuto_withVin_exists_return202() throws Exception {
         // GIVEN | ARRANGE
         // WHEN | ACT
         mockMvc.perform(delete("/api/autos/ACC"))
-        // THEN | ASSERT
+                // THEN | ASSERT
                 .andExpect(status().isAccepted());
         verify(automobilesService).deleteAuto(anyString());
     }
 
-// DELETE: /api/autos/{vin} returns 204, vehicle not found
-
+    // DELETE: /api/autos/{vin} returns 204, vehicle not found
+    @Test
+    void deleteAuto_withVin_notExists_return204() throws Exception {
+        // GIVEN | ARRANGE
+        doThrow(new AutoNotFountException()).when(automobilesService).deleteAuto(anyString());
+        // WHEN | ACT
+        mockMvc.perform(delete("/api/autos/ABBCC"))
+                // THEN | ASSERT
+                .andExpect(status().isNoContent());
+        verify(automobilesService).deleteAuto(anyString());
+    }
 }
