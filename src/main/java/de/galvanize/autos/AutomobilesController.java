@@ -19,12 +19,21 @@ public class AutomobilesController {
         AutomobileList automobileList;
         if (color == null && make == null) {
              automobileList = automobilesService.getAutos();
+        } else if (color != null && make == null){
+            automobileList = automobilesService.getAutos(color);
+        }else if (color == null && make != null){
+            automobileList = automobilesService.getAutos(make);
         } else {
             automobileList = automobilesService.getAutos(color, make);
         }
         return automobileList.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(automobileList);
+    }
+
+    @GetMapping("/api/autos/{vin}")
+    public Automobile getAuto(@PathVariable String vin){
+        return automobilesService.getAuto(vin);
     }
 
     @PostMapping("/api/autos")
@@ -35,6 +44,5 @@ public class AutomobilesController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void invalidAutomobileHandler(InvalidAutomobileException invalidAutomobileException){
-
     }
 }

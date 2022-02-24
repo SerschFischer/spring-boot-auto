@@ -63,7 +63,35 @@ public class AutomobilesControllerTests {
     }
 
     // GET: /api/autos?color=RED returns red cars
+    @Test
+    void getAutos_searchColorParam_returnsAutomobileList() throws Exception {
+        // GIVEN | ARRANGE
+        List<Automobile> automobileList = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            automobileList.add(new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ABBCC" + i));
+        }
+        when(automobilesService.getAutos(anyString())).thenReturn(new AutomobileList(automobileList));
+        // WHEN | ACT
+        mockMvc.perform(get("/api/autos?color=RED"))
+                // THEN | ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.automobiles", hasSize(2)));
+    }
     // GET: /api/autos?make=Ford returns fords
+    @Test
+    void getAutos_searchMakeParam_returnsAutomobileList() throws Exception {
+        // GIVEN | ARRANGE
+        List<Automobile> automobileList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            automobileList.add(new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ABBCC" + i));
+        }
+        when(automobilesService.getAutos(anyString())).thenReturn(new AutomobileList(automobileList));
+        // WHEN | ACT
+        mockMvc.perform(get("/api/autos?make=Ford"))
+                // THEN | ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.automobiles", hasSize(3)));
+    }
     // GET: /api/autos?make=Ford&color=GREEN
     @Test
     void getAutos_searchParams_returnsAutomobileList() throws Exception {
@@ -82,7 +110,7 @@ public class AutomobilesControllerTests {
 
 
     // POST: /api/autos
-// POST: /api/autos/{vin} returns created automobile
+    // POST: /api/autos/{vin} returns created automobile
     @Test
     void addAuto_valid_returnAuto() throws Exception {
         // GIVEN | ARRANGE
@@ -119,10 +147,22 @@ public class AutomobilesControllerTests {
 
 // GET: /api/autos/{vin}
 // GET: /api/autos/{vin} returns the requested automobile
+    @Test
+    void getAuto_withVin_returnAuto() throws Exception {
+        // GIVEN | ARRANGE
+        Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ACC");
+        when(automobilesService.getAuto(anyString())).thenReturn(automobile);
+        // WHEN | ACT
+        mockMvc.perform(get("/api/autos/"+automobile.getVin()))
+        // THEN | ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("vin").value(automobile.getVin()));
+    }
 // GET: /api/autos/{vin} returns not content auto not found
 
 // PATCH: /api/autos{vin}
 // PATCH: /api/autos/{vin} returns patched automobile
+
 // PATCH: /api/autos/{vin} returns no content auto not found
 // PATCH: /api/autos/{vin} returns 400 bad request (no payload, no changes, or already done)
 
