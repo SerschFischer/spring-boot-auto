@@ -5,12 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class AutomobilesController {
+public class AutomobileController {
 
-    private final AutomobilesService automobilesService;
+    private final AutomobileService automobileService;
 
-    public AutomobilesController(AutomobilesService automobilesService) {
-        this.automobilesService = automobilesService;
+    public AutomobileController(AutomobileService automobileService) {
+        this.automobileService = automobileService;
     }
 
     @GetMapping("/api/autos")
@@ -18,13 +18,13 @@ public class AutomobilesController {
                                                    @RequestParam(required = false) String make) {
         AutomobileList automobileList;
         if (color == null && make == null) {
-             automobileList = automobilesService.getAutos();
+             automobileList = automobileService.getAutomobiles();
         } else if (color != null && make == null){
-            automobileList = automobilesService.getAutos(color);
+            automobileList = automobileService.getAutomobiles(color);
         }else if (color == null && make != null){
-            automobileList = automobilesService.getAutos(make);
+            automobileList = automobileService.getAutomobiles(make);
         } else {
-            automobileList = automobilesService.getAutos(color, make);
+            automobileList = automobileService.getAutomobiles(color, make);
         }
         return automobileList.isEmpty()
                 ? ResponseEntity.noContent().build()
@@ -33,13 +33,13 @@ public class AutomobilesController {
 
     @GetMapping("/api/autos/{vin}")
     public Automobile getAuto(@PathVariable String vin){
-        return automobilesService.getAuto(vin);
+        return automobileService.getAutomobile(vin);
     }
 
     @PatchMapping("/api/autos/{vin}")
     public Automobile updateAuto(@PathVariable String vin,
                                  @RequestBody UpdateOwnerRequest update){
-        Automobile automobile = automobilesService.updateAutomobile(vin, update.getColor(), update.getOwner());
+        Automobile automobile = automobileService.updateAutomobile(vin, update.getColor(), update.getOwner());
         automobile.setColor(update.getColor());
         automobile.setOwner(update.getOwner());
         return automobile;
@@ -47,14 +47,14 @@ public class AutomobilesController {
 
     @PostMapping("/api/autos")
     public Automobile addAuto(@RequestBody Automobile automobile){
-        return automobilesService.addAuto(automobile);
+        return automobileService.addAutomobile(automobile);
     }
 
     @DeleteMapping("/api/autos/{vin}")
     public ResponseEntity deleteAuto(@PathVariable String vin){
         try{
 
-        automobilesService.deleteAuto(vin);
+        automobileService.deleteAutomobile(vin);
         } catch (AutoNotFountException autoNotFountException){
             return ResponseEntity.noContent().build();
         }
