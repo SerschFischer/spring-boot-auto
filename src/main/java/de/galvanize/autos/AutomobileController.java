@@ -55,7 +55,7 @@ public class AutomobileController {
         try{
 
         automobileService.deleteAutomobile(vin);
-        } catch (AutoNotFountException autoNotFountException){
+        } catch (AutomobileNotFountException autoNotFountException){
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.accepted().build();

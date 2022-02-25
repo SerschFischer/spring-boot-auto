@@ -198,7 +198,7 @@ public class AutomobileControllerTests {
     @Test
     void deleteAuto_withVin_notExists_return204() throws Exception {
         // GIVEN | ARRANGE
-        doThrow(new AutoNotFountException()).when(automobileService).deleteAutomobile(anyString());
+        doThrow(new AutomobileNotFountException()).when(automobileService).deleteAutomobile(anyString());
         // WHEN | ACT
         mockMvc.perform(delete("/api/autos/ABBCC"))
                 // THEN | ASSERT
