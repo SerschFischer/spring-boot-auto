@@ -20,14 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AutomobilesController.class)
-public class AutomobilesControllerTests {
+@WebMvcTest(AutomobileController.class)
+public class AutomobileControllerTests {
 
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
-    AutomobilesService automobilesService;
+    AutomobileService automobileService;
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -40,7 +40,7 @@ public class AutomobilesControllerTests {
         for (int i = 0; i < 5; i++) {
             automobiles.add(new Automobile(1999, "Ford", "Mustang", "Red", "Nobody", "123123"));
         }
-        when(automobilesService.getAutos()).thenReturn(new AutomobileList(automobiles));
+        when(automobileService.getAutomobiles()).thenReturn(new AutomobileList(automobiles));
         // WHEN | ACT
         mockMvc.perform(get("/api/autos"))
                 .andDo(print())
@@ -53,7 +53,7 @@ public class AutomobilesControllerTests {
     @Test
     void getAutos_noParams_none_returnsNoContent() throws Exception {
         // GIVEN | ARRANGE
-        when(automobilesService.getAutos()).thenReturn(new AutomobileList());
+        when(automobileService.getAutomobiles()).thenReturn(new AutomobileList());
         // WHEN | ACT
         mockMvc.perform(get("/api/autos"))
                 .andDo(print())
@@ -69,7 +69,7 @@ public class AutomobilesControllerTests {
         for (int i = 0; i < 2; i++) {
             automobileList.add(new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ABBCC" + i));
         }
-        when(automobilesService.getAutos(anyString())).thenReturn(new AutomobileList(automobileList));
+        when(automobileService.getAutomobiles(anyString())).thenReturn(new AutomobileList(automobileList));
         // WHEN | ACT
         mockMvc.perform(get("/api/autos?color=RED"))
                 // THEN | ASSERT
@@ -85,7 +85,7 @@ public class AutomobilesControllerTests {
         for (int i = 0; i < 3; i++) {
             automobileList.add(new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ABBCC" + i));
         }
-        when(automobilesService.getAutos(anyString())).thenReturn(new AutomobileList(automobileList));
+        when(automobileService.getAutomobiles(anyString())).thenReturn(new AutomobileList(automobileList));
         // WHEN | ACT
         mockMvc.perform(get("/api/autos?make=Ford"))
                 // THEN | ASSERT
@@ -101,7 +101,7 @@ public class AutomobilesControllerTests {
         for (int i = 0; i < 5; i++) {
             automobileList.add(new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ABBCC" + i));
         }
-        when(automobilesService.getAutos(anyString(), anyString())).thenReturn(new AutomobileList(automobileList));
+        when(automobileService.getAutomobiles(anyString(), anyString())).thenReturn(new AutomobileList(automobileList));
         // WHEN | ACT
         mockMvc.perform(get("/api/autos?color=RED&make=Ford"))
                 // THEN | ASSERT
@@ -116,7 +116,7 @@ public class AutomobilesControllerTests {
     void addAuto_valid_returnAuto() throws Exception {
         // GIVEN | ARRANGE
         Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ACC");
-        when(automobilesService.addAuto(any(Automobile.class)))
+        when(automobileService.addAutomobile(any(Automobile.class)))
                 .thenReturn(automobile);
         // WHEN | ACT
         mockMvc.perform(post("/api/autos")
@@ -133,7 +133,7 @@ public class AutomobilesControllerTests {
     @Test
     void addAuto_badRequest_return400() throws Exception {
         // GIVEN | ARRANGE
-        when(automobilesService.addAuto(any(Automobile.class)))
+        when(automobileService.addAutomobile(any(Automobile.class)))
                 .thenThrow(InvalidAutomobileException.class);
         String json = "{\"year\":1999,\"make\":\"Ford\",\"model\":\"Mustang\",\"color\":\"RED\",\"owner\":\"Nobody\",\"vin\":\"ACC\"}";
         // WHEN | ACT
@@ -152,7 +152,7 @@ public class AutomobilesControllerTests {
     void getAuto_withVin_returnAuto() throws Exception {
         // GIVEN | ARRANGE
         Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Nobody", "ACC");
-        when(automobilesService.getAuto(anyString())).thenReturn(automobile);
+        when(automobileService.getAutomobile(anyString())).thenReturn(automobile);
         // WHEN | ACT
         mockMvc.perform(get("/api/autos/" + automobile.getVin()))
                 // THEN | ASSERT
@@ -167,7 +167,7 @@ public class AutomobilesControllerTests {
     void updateAuto_withObject_returnAuto() throws Exception {
         // GIVEN | ARRANGE
         Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Bob", "ACC");
-        when(automobilesService.updateAutomobile(anyString(), anyString(), anyString())).thenReturn(automobile);
+        when(automobileService.updateAutomobile(anyString(), anyString(), anyString())).thenReturn(automobile);
         // WHEN | ACT
         mockMvc.perform(patch("/api/autos/" + automobile.getVin())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -191,18 +191,18 @@ public class AutomobilesControllerTests {
         mockMvc.perform(delete("/api/autos/ACC"))
                 // THEN | ASSERT
                 .andExpect(status().isAccepted());
-        verify(automobilesService).deleteAuto(anyString());
+        verify(automobileService).deleteAutomobile(anyString());
     }
 
     // DELETE: /api/autos/{vin} returns 204, vehicle not found
     @Test
     void deleteAuto_withVin_notExists_return204() throws Exception {
         // GIVEN | ARRANGE
-        doThrow(new AutoNotFountException()).when(automobilesService).deleteAuto(anyString());
+        doThrow(new AutoNotFountException()).when(automobileService).deleteAutomobile(anyString());
         // WHEN | ACT
         mockMvc.perform(delete("/api/autos/ABBCC"))
                 // THEN | ASSERT
                 .andExpect(status().isNoContent());
-        verify(automobilesService).deleteAuto(anyString());
+        verify(automobileService).deleteAutomobile(anyString());
     }
 }
