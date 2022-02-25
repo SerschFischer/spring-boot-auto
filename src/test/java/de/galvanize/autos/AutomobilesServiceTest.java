@@ -10,20 +10,21 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AutomobilesServiceTest {
 
-    private AutomobileService automobileService;
-
     @Mock
     AutomobileRepository automobileRepository;
+    private AutomobileService automobileService;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         automobileService = new AutomobileService(automobileRepository);
     }
 
@@ -75,7 +76,7 @@ class AutomobilesServiceTest {
         // WHEN | ACT
         when(automobileRepository.findByVin(anyString()))
                 .thenReturn(Optional.of(automobile));
-        Automobile returnedAutomobile  = automobileService.getAutomobile(automobile.getVin());
+        Automobile returnedAutomobile = automobileService.getAutomobile(automobile.getVin());
         // THEN | ASSERT
         assertThat(returnedAutomobile).isNotNull();
         assertThat(returnedAutomobile.getMake()).isEqualTo("Ford");
@@ -90,7 +91,7 @@ class AutomobilesServiceTest {
         when(automobileRepository.findByVin(anyString()))
                 .thenReturn(Optional.of(automobile));
         when(automobileRepository.save(any(Automobile.class))).thenReturn(automobile);
-        Automobile returnedAutomobile  = automobileService.updateAutomobile(
+        Automobile returnedAutomobile = automobileService.updateAutomobile(
                 automobile.getVin(), "PURPLE", "ANYBODY");
         // THEN | ASSERT
         assertThat(returnedAutomobile).isNotNull();
@@ -98,9 +99,29 @@ class AutomobilesServiceTest {
     }
 
     @Test
-    void deleteAuto() {
+    void deleteAutomobile_byVin() {
         // GIVEN | ARRANGE
+        Automobile automobile = new Automobile(1999, "Ford", "Mustang", "RED", "Bob", "ACC");
+        automobile.setColor("RED");
+        when(automobileRepository.findByVin(anyString()))
+                .thenReturn(Optional.of(automobile));
         // WHEN | ACT
+        automobileService.deleteAutomobile(automobile.getVin());
         // THEN | ASSERT
+        verify(automobileRepository).delete(any(Automobile.class));
+    }
+
+    @Test
+    void deleteAutomobile_byVin_notExists() {
+        // GIVEN | ARRANGE
+        when(automobileRepository.findByVin(anyString()))
+                .thenReturn(Optional.empty());
+        // WHEN | ACT
+
+        // THEN | ASSERT
+        assertThatExceptionOfType(AutomobileNotFountException.class)
+                .isThrownBy(() -> {
+                    automobileService.deleteAutomobile("VIN-NOT-EXISTS");
+                });
     }
 }
