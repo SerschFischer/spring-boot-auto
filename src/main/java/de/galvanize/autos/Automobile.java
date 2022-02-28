@@ -36,6 +36,14 @@ public class Automobile {
         this.owner = owner;
         this.vin = vin;
     }
+    public Automobile(int year, String make, String model,  String vin) {
+        this.year = year;
+        this.make = make;
+        this.model = model;
+        this.vin = vin;
+    }
+
+
 
     public Long getId() {
         return id;
